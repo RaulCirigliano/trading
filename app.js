@@ -59,13 +59,24 @@ const smaSeries = chart.addLineSeries({
     priceLineVisible: false,
 });
 
+const symbolSelect = document.getElementById('symbolSelect');
+let currentSymbol = symbolSelect.value;
 let currentPrice = 0;
+
+symbolSelect.addEventListener('change', () => {
+    currentSymbol = symbolSelect.value;
+    logToTerminal(`Cambiando activo a ${currentSymbol}...`, 'warn');
+    candleSeries.setData([]); // Limpiar gráfico
+    smaSeries.setData([]);
+    fetchMarketData();
+    updateSentiment();
+});
 
 // Obtener datos reales del motor Python
 async function fetchMarketData() {
     try {
-        logToTerminal('Conectando al motor Python para obtener velas...', 'info');
-        const response = await fetch('http://localhost:8765/api/market/history?symbol=BTC/USDT&timeframe=1m');
+        logToTerminal(`Conectando al motor Python para obtener velas de ${currentSymbol}...`, 'info');
+        const response = await fetch(`http://localhost:8765/api/market/history?symbol=${currentSymbol}&timeframe=1m`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const data = await response.json();
@@ -111,9 +122,9 @@ agentToggle.addEventListener('click', () => {
         logToTerminal('Agente activado. Iniciando análisis cuantitativo.', 'info');
         
         simulateInterval = setInterval(async () => {
-            logToTerminal('Consultando agente de Python...', 'info');
+            logToTerminal(`Consultando agente de Python (${currentSymbol})...`, 'info');
             try {
-                const response = await fetch('http://localhost:8765/api/market/analysis?symbol=BTC/USDT&timeframe=1m');
+                const response = await fetch(`http://localhost:8765/api/market/analysis?symbol=${currentSymbol}&timeframe=1m`);
                 const data = await response.json();
                 
                 if (data && !data.error) {
@@ -142,7 +153,7 @@ agentToggle.addEventListener('click', () => {
 // Ciclo de Gráfico en Vivo (Cada 2 segundos) para que se mueva rápido
 setInterval(async () => {
     try {
-        const response = await fetch('http://localhost:8765/api/market/history?symbol=BTC/USDT&timeframe=1m');
+        const response = await fetch(`http://localhost:8765/api/market/history?symbol=${currentSymbol}&timeframe=1m`);
         const data = await response.json();
         if (data && data.length > 0) {
             const latest_candle = data[data.length - 1];
@@ -163,7 +174,7 @@ setInterval(async () => {
 // Agente Sentimiento (Cada 60 segundos)
 async function updateSentiment() {
     try {
-        const response = await fetch('http://localhost:8765/api/market/sentiment');
+        const response = await fetch(`http://localhost:8765/api/market/sentiment?symbol=${currentSymbol}`);
         const data = await response.json();
         if (data && !data.error) {
             const badge = document.getElementById('sentimentScoreBadge');

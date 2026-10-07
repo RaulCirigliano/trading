@@ -19,8 +19,16 @@
             <h1 class="text-xl font-bold tracking-wider">AI Trading <span class="text-blue-500">Agent</span></h1>
         </div>
         <div class="flex items-center space-x-4">
-            <span class="text-gray-400 text-sm">Capital de Prueba:</span>
-            <span class="font-mono text-green-400">$10,000.00</span>
+            <div class="bg-gray-900 px-3 py-1 rounded-lg border border-gray-700 flex items-center mr-4">
+                <span class="text-xs text-gray-400 uppercase mr-2 font-bold">Activo:</span>
+                <select id="symbolSelect" class="bg-transparent text-white font-bold outline-none cursor-pointer">
+                    <option value="BTC/USDT">BTC / USDT</option>
+                    <option value="ETH/USDT">ETH / USDT</option>
+                    <option value="SOL/USDT">SOL / USDT</option>
+                </select>
+            </div>
+            <span class="text-gray-400 text-sm hidden md:inline">Capital de Prueba:</span>
+            <span class="font-mono text-green-400 hidden md:inline">$10,000.00</span>
             <button id="agentToggle" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded font-semibold transition">
                 Activar Agente
             </button>
