@@ -13,8 +13,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializamos el exchange (usamos Binance por defecto, pero CCXT soporta +100)
-exchange = ccxt.binance()
+# Inicializamos el exchange (usamos Kraken por defecto para evitar bloqueos geográficos de Binance)
+exchange = ccxt.kraken()
 
 @app.get("/")
 def read_root():
