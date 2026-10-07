@@ -49,23 +49,57 @@
                 <div id="chart-container" class="w-full h-[400px]"></div>
             </div>
 
-            <!-- Posiciones Abiertas -->
+            <!-- Posiciones Activas -->
             <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
-                <h2 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Posiciones Activas</h2>
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <span class="mr-2">💼</span> Posiciones Activas
+                </h2>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="text-gray-400">
+                    <table class="w-full text-left text-sm text-gray-400">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-900">
                             <tr>
-                                <th class="pb-3">Activo</th>
-                                <th class="pb-3">Tipo</th>
-                                <th class="pb-3">Entrada</th>
-                                <th class="pb-3">Actual</th>
-                                <th class="pb-3">PNL</th>
+                                <th class="px-4 py-2 rounded-tl">Activo</th>
+                                <th class="px-4 py-2">Cantidad</th>
+                                <th class="px-4 py-2">Precio Entrada</th>
+                                <th class="px-4 py-2">Precio Actual</th>
+                                <th class="px-4 py-2 rounded-tr">PnL No Realizado</th>
                             </tr>
                         </thead>
-                        <tbody id="positionsTable">
-                            <tr class="text-gray-500 italic">
-                                <td colspan="5" class="py-4 text-center">No hay posiciones abiertas por el agente</td>
+                        <tbody id="activePositionsBody" class="divide-y divide-gray-700">
+                            <tr id="emptyPositionsRow">
+                                <td colspan="5" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Historial de Operaciones -->
+            <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 mt-6">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                    <h2 class="text-lg font-semibold text-white flex items-center">
+                        <span class="mr-2">📝</span> Historial de Operaciones y Rendimiento
+                    </h2>
+                    <div class="bg-gray-900 px-3 py-1 rounded border border-gray-600 text-xs">
+                        Rendimiento Neto: <span id="pnlDisplay" class="font-bold text-gray-400">$0.00 (0.00%)</span>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-400">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-900">
+                            <tr>
+                                <th class="px-4 py-2 rounded-tl">Hora</th>
+                                <th class="px-4 py-2">Activo</th>
+                                <th class="px-4 py-2">Tipo</th>
+                                <th class="px-4 py-2">Precio</th>
+                                <th class="px-4 py-2">Estado</th>
+                                <th class="px-4 py-2 rounded-tr">Modo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeHistoryBody" class="divide-y divide-gray-700">
+                            <tr id="emptyHistoryRow">
+                                <td colspan="6" class="px-4 py-4 text-center text-gray-600 italic">No hay operaciones registradas aún.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -186,63 +220,7 @@
             </div>
         </div>
 
-        <!-- Posiciones Activas -->
-        <div class="mt-6 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
-            <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
-                <span class="mr-2">💼</span> Posiciones Activas
-            </h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-gray-400">
-                    <thead class="text-xs text-gray-500 uppercase bg-gray-900">
-                        <tr>
-                            <th class="px-4 py-2 rounded-tl">Activo</th>
-                            <th class="px-4 py-2">Cantidad</th>
-                            <th class="px-4 py-2">Precio de Entrada</th>
-                            <th class="px-4 py-2">Precio Actual</th>
-                            <th class="px-4 py-2 rounded-tr">PnL No Realizado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activePositionsBody" class="divide-y divide-gray-700">
-                        <tr id="emptyPositionsRow">
-                            <td colspan="5" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- Historial de Operaciones -->
-        <div class="mt-6 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
-            <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                <h2 class="text-lg font-semibold text-white flex items-center">
-                    <span class="mr-2">📝</span> Historial de Operaciones y Rendimiento
-                </h2>
-                <div class="bg-gray-900 px-3 py-1 rounded border border-gray-600 text-xs">
-                    Rendimiento Neto: <span id="pnlDisplay" class="font-bold text-gray-400">$0.00 (0.00%)</span>
-                </div>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-gray-400">
-                    <thead class="text-xs text-gray-500 uppercase bg-gray-900">
-                        <tr>
-                            <th class="px-4 py-2 rounded-tl">Hora</th>
-                            <th class="px-4 py-2">Activo</th>
-                            <th class="px-4 py-2">Tipo</th>
-                            <th class="px-4 py-2">Precio</th>
-                            <th class="px-4 py-2">Estado</th>
-                            <th class="px-4 py-2 rounded-tr">Modo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tradeHistoryBody" class="divide-y divide-gray-700">
-                        <!-- Las filas se insertarán aquí dinámicamente -->
-                        <tr id="emptyHistoryRow">
-                            <td colspan="6" class="px-4 py-4 text-center text-gray-600 italic">No hay operaciones registradas aún.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
     </div>
 
