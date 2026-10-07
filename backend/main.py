@@ -71,10 +71,10 @@ def get_history(symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 10
         return {"error": str(e)}
 
 @app.get("/api/market/sentiment")
-def get_sentiment():
+def get_sentiment(symbol: str = "BTC/USDT"):
     """
-    Agente de Sentimiento: Lee noticias de CoinDesk y calcula el sentimiento
-    usando Vader (NLP) sin necesidad de gastar saldo de Gemini.
+    Agente de Sentimiento: Lee noticias de CoinDesk y filtra solo las que
+    hablan del activo que estamos operando.
     """
     try:
         import feedparser
@@ -83,25 +83,38 @@ def get_sentiment():
         feed = feedparser.parse('https://www.coindesk.com/arc/outboundfeeds/rss/')
         analyzer = SentimentIntensityAnalyzer()
         
+        # Extraer el nombre de la moneda (ej. "BTC/USDT" -> "BTC", "Bitcoin")
+        base_asset = symbol.split('/')[0].upper()
+        # Diccionario simple para mapear nombres completos si es necesario
+        nombres = {"BTC": "Bitcoin", "ETH": "Ethereum", "SOL": "Solana"}
+        nombre_completo = nombres.get(base_asset, base_asset)
+        
         total_score = 0
         news_list = []
         
-        # Analizar los últimos 5 titulares
-        for entry in feed.entries[:5]:
+        # Filtrar noticias que hablen de nuestro activo
+        for entry in feed.entries:
             title = entry.title
-            # Vader está optimizado para inglés, lo cual es perfecto para CoinDesk
-            score = analyzer.polarity_scores(title)
-            compound = score['compound'] # Va de -1 (muy negativo) a 1 (muy positivo)
-            total_score += compound
+            # Buscar menciones (ignorar mayúsculas)
+            if base_asset.lower() in title.lower() or nombre_completo.lower() in title.lower():
+                score = analyzer.polarity_scores(title)
+                compound = score['compound']
+                total_score += compound
+                
+                news_list.append({
+                    "title": title,
+                    "score": round(compound, 2)
+                })
+                
+                if len(news_list) >= 5: # Quedarnos con máximo 5 noticias relevantes
+                    break
+                    
+        # Si no hay noticias recientes sobre esta moneda, ser neutrales
+        if len(news_list) == 0:
+            return {"score": 0, "estado": "NEUTRAL", "noticias": [{"title": f"Sin noticias recientes de {nombre_completo}", "score": 0}]}
             
-            news_list.append({
-                "title": title,
-                "score": round(compound, 2)
-            })
-            
-        avg_score = total_score / 5
+        avg_score = total_score / len(news_list)
         
-        # Determinar sentimiento general
         if avg_score > 0.15:
             estado = "BULLISH"
         elif avg_score < -0.15:
