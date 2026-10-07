@@ -63,6 +63,17 @@ const symbolSelect = document.getElementById('symbolSelect');
 let currentSymbol = symbolSelect.value;
 let currentPrice = 0;
 
+// Variables de Simulación (Paper Trading)
+let portfolio = {
+    USDT: 10000.00,
+    ASSET: 0
+};
+
+function updateCapitalDisplay() {
+    const total = portfolio.USDT + (portfolio.ASSET * currentPrice);
+    document.getElementById('capitalDisplay').innerText = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+}
+
 symbolSelect.addEventListener('change', () => {
     currentSymbol = symbolSelect.value;
     logToTerminal(`Cambiando activo a ${currentSymbol}...`, 'warn');
@@ -93,6 +104,7 @@ async function fetchMarketData() {
             const currentPriceElement = document.getElementById('currentPrice');
             currentPrice = data[data.length - 1].close; 
             currentPriceElement.innerText = `$${currentPrice.toLocaleString()}`;
+            updateCapitalDisplay();
             logToTerminal('Gráfico actualizado con datos reales.', 'action');
         } else {
             logToTerminal('Error de datos: ' + data.error, 'error');
@@ -135,6 +147,23 @@ agentToggle.addEventListener('click', () => {
                     
                     logToTerminal(`[${data.signal}] RSI: ${data.indicators.rsi} | SMA20: ${data.indicators.sma_20}`, 'warn');
                     logToTerminal(`Razonamiento: ${data.reason}`, logType);
+                    
+                    // Lógica de Paper Trading
+                    const baseCoin = currentSymbol.split('/')[0];
+                    if (data.signal === 'COMPRAR' && portfolio.USDT > 10) { // Comprar todo si hay saldo
+                        const cantidadAComprar = portfolio.USDT / currentPrice;
+                        portfolio.ASSET += cantidadAComprar;
+                        portfolio.USDT = 0;
+                        logToTerminal(`💰 SIMULACIÓN: COMPRADO ${cantidadAComprar.toFixed(4)} ${baseCoin} a $${currentPrice}`, 'action');
+                        updateCapitalDisplay();
+                    } 
+                    else if (data.signal === 'VENDER' && portfolio.ASSET > 0.0001) { // Vender todo
+                        const dolaresObtenidos = portfolio.ASSET * currentPrice;
+                        portfolio.USDT += dolaresObtenidos;
+                        portfolio.ASSET = 0;
+                        logToTerminal(`💵 SIMULACIÓN: VENDIDO ${baseCoin} a $${currentPrice}. Nuevo Saldo USDT: $${portfolio.USDT.toFixed(2)}`, 'error');
+                        updateCapitalDisplay();
+                    }
                 } else {
                     logToTerminal('Error de análisis: ' + data.error, 'error');
                 }
@@ -165,7 +194,9 @@ setInterval(async () => {
             }
             
             const currentPriceElement = document.getElementById('currentPrice');
-            currentPriceElement.innerText = `$${latest_candle.close.toLocaleString()}`;
+            currentPrice = latest_candle.close;
+            currentPriceElement.innerText = `$${currentPrice.toLocaleString()}`;
+            updateCapitalDisplay();
         }
     } catch (err) {
         // Silencioso para no ensuciar la consola
