@@ -39,3 +39,21 @@ Este proyecto es una plataforma integral para traders profesionales que combina 
 ## Notas Técnicas
 - **Ruta del Proyecto:** `/home/raul/Escritorio/proyectos/triding`
 - Se sugiere usar entornos virtuales (`venv`) para el desarrollo en Python futuro.
+
+
+## Notas Adicionales y Estrategia
+
+Entiendo perfectamente lo que buscas. Quieres crear una gran base de conocimiento (documentos, estrategias y videos de trading) para que, al momento de programar y diseñar tu proyecto aquí conmigo, yo entienda tu visión y estrategias con exactitud. Dado que estamos trabajando en este entorno de desarrollo, **no puedo conectarme directamente a tu cuenta web personal de NotebookLM**, pero podemos lograr exactamente lo que quieres de dos formas mucho más directas y potentes:
+
+### Opción 1: Usar este mismo chat como tu "Cuaderno"
+El modelo de IA que utilizo (Gemini) tiene una capacidad de memoria enorme (ventana de contexto). Esto significa que **puedes subir toda tu información directamente a este chat o al espacio de trabajo**.
+* Puedes arrastrar y soltar PDFs, archivos de texto con tus estrategias, e incluso videos tutoriales directamente aquí.
+* Una vez que los subas, yo los analizaré, los mantendré en memoria y usaré todo ese conocimiento experto en trading para programar el proyecto exactamente como tú lo pretendes.
+
+### Opción 2: Programar nuestro propio "Cerebro de Trading" en tu proyecto
+Si lo que quieres es que el *software* que vamos a construir tenga ese conocimiento incorporado (por ejemplo, si vamos a crear un bot de trading o una app de análisis), podemos iniciar un proyecto ahora mismo y usar la **API de Gemini**.
+1. Creamos una carpeta en tu espacio de trabajo donde guardarás todos esos PDFs, notas y videos de trading.
+2. Yo programo un script que lea todos esos archivos (creando nuestro propio NotebookLM local).
+3. El proyecto que construyamos consultará esa base de datos de trading para tomar decisiones, generar alertas o darte consejos precisos.
+
+**¿Cómo prefieres que empecemos?** Si quieres que yo aprenda tus estrategias para ayudarte a programar, **puedes empezar a subir algunos de esos archivos de texto, PDFs o describir tus reglas de trading aquí mismo**, y luego me cuentas qué tipo de proyecto de software de trading quieres que construyamos juntos.
