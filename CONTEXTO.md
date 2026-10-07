@@ -57,3 +57,9 @@ Si lo que quieres es que el *software* que vamos a construir tenga ese conocimie
 3. El proyecto que construyamos consultará esa base de datos de trading para tomar decisiones, generar alertas o darte consejos precisos.
 
 **¿Cómo prefieres que empecemos?** Si quieres que yo aprenda tus estrategias para ayudarte a programar, **puedes empezar a subir algunos de esos archivos de texto, PDFs o describir tus reglas de trading aquí mismo**, y luego me cuentas qué tipo de proyecto de software de trading quieres que construyamos juntos.
+
+### Alternativas para Integración de Conocimiento (Estilo NotebookLM)
+En el futuro, para que el sistema tenga acceso a una gran base de conocimiento de trading sin depender de subir archivos manualmente en cada sesión, consideraremos las siguientes aproximaciones:
+1. **Gemini API (Recomendada para el proyecto):** Construir nuestra propia aplicación RAG (Retrieval-Augmented Generation) usando la API de Gemini o Google AI Studio. Esta es la vía oficial y escalable para subir múltiples documentos (estrategias, PDFs) y que la IA responda preguntas y tome decisiones basándose estrictamente en ellos.
+2. **NotebookLM Enterprise API:** En caso de contar con Google Cloud, aprovechar la API oficial empresarial para gestionar cuadernos y fuentes de datos.
+3. **Servidores MCP (Model Context Protocol):** Herramientas comunitarias para conectar cuentas individuales de NotebookLM con el agente de IA, útiles para prototipado rápido pero sin garantía de estabilidad a largo plazo.
