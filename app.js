@@ -148,21 +148,21 @@ agentToggle.addEventListener('click', () => {
                     logToTerminal(`[${data.signal}] RSI: ${data.indicators.rsi} | SMA20: ${data.indicators.sma_20}`, 'warn');
                     logToTerminal(`Razonamiento: ${data.reason}`, logType);
                     
-                    // Lógica de Paper Trading
+                    // Lógica de Paper Trading & Copiloto
                     const baseCoin = currentSymbol.split('/')[0];
-                    if (data.signal === 'COMPRAR' && portfolio.USDT > 10) { // Comprar todo si hay saldo
-                        const cantidadAComprar = portfolio.USDT / currentPrice;
-                        portfolio.ASSET += cantidadAComprar;
-                        portfolio.USDT = 0;
-                        logToTerminal(`💰 SIMULACIÓN: COMPRADO ${cantidadAComprar.toFixed(4)} ${baseCoin} a $${currentPrice}`, 'action');
-                        updateCapitalDisplay();
-                    } 
-                    else if (data.signal === 'VENDER' && portfolio.ASSET > 0.0001) { // Vender todo
-                        const dolaresObtenidos = portfolio.ASSET * currentPrice;
-                        portfolio.USDT += dolaresObtenidos;
-                        portfolio.ASSET = 0;
-                        logToTerminal(`💵 SIMULACIÓN: VENDIDO ${baseCoin} a $${currentPrice}. Nuevo Saldo USDT: $${portfolio.USDT.toFixed(2)}`, 'error');
-                        updateCapitalDisplay();
+                    const executionMode = document.getElementById('executionModeSelect')?.value || 'copilot';
+                    
+                    const isBuyable = data.signal === 'COMPRAR' && portfolio.USDT > 10;
+                    const isSellable = data.signal === 'VENDER' && portfolio.ASSET > 0.0001;
+                    
+                    if (isBuyable || isSellable) {
+                        if (executionMode === 'auto') {
+                            executeTrade(data.signal, baseCoin, currentPrice);
+                        } else {
+                            // Detener momentáneamente el ciclo para no spamear
+                            clearInterval(simulateInterval); 
+                            showCopilotModal(data.signal, data.reason, baseCoin, currentPrice);
+                        }
                     }
                 } else {
                     logToTerminal('Error de análisis: ' + data.error, 'error');
@@ -264,4 +264,50 @@ if (newsSourceSelect) {
 
 document.getElementById('clearLogs').addEventListener('click', () => {
     terminal.innerHTML = '';
+});
+
+// -- Funciones de Trading y Copiloto --
+function executeTrade(signal, baseCoin, price) {
+    if (signal === 'COMPRAR') {
+        const cantidadAComprar = portfolio.USDT / price;
+        portfolio.ASSET += cantidadAComprar;
+        portfolio.USDT = 0;
+        logToTerminal(`💰 SIMULACIÓN: COMPRADO ${cantidadAComprar.toFixed(4)} ${baseCoin} a $${price.toLocaleString()}`, 'action');
+    } else if (signal === 'VENDER') {
+        const dolaresObtenidos = portfolio.ASSET * price;
+        portfolio.USDT += dolaresObtenidos;
+        portfolio.ASSET = 0;
+        logToTerminal(`💵 SIMULACIÓN: VENDIDO ${baseCoin} a $${price.toLocaleString()}. Nuevo Saldo USDT: $${portfolio.USDT.toFixed(2)}`, 'error');
+    }
+    updateCapitalDisplay();
+}
+
+let pendingTrade = null;
+const modal = document.getElementById('copilotModal');
+
+function showCopilotModal(signal, reason, baseCoin, price) {
+    document.getElementById('copilotMessage').innerText = `El Agente recomienda ${signal} ${baseCoin} a $${price.toLocaleString()}`;
+    document.getElementById('copilotReason').innerText = `Razonamiento: ${reason}`;
+    modal.classList.remove('hidden');
+    pendingTrade = { signal, baseCoin, price };
+}
+
+document.getElementById('btnReject').addEventListener('click', () => {
+    modal.classList.add('hidden');
+    logToTerminal('❌ Operación rechazada por el usuario.', 'warn');
+    // Reactivar ciclo
+    agentToggle.click(); // Apaga
+    setTimeout(() => agentToggle.click(), 500); // Prende
+});
+
+document.getElementById('btnApprove').addEventListener('click', () => {
+    modal.classList.add('hidden');
+    if (pendingTrade) {
+        logToTerminal('✅ Operación aprobada por el usuario.', 'action');
+        executeTrade(pendingTrade.signal, pendingTrade.baseCoin, pendingTrade.price);
+        pendingTrade = null;
+    }
+    // Reactivar ciclo
+    agentToggle.click(); // Apaga
+    setTimeout(() => agentToggle.click(), 500); // Prende
 });

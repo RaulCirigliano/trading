@@ -131,9 +131,9 @@
                         
                         <div>
                             <label class="text-xs text-gray-400 mb-1 block">Modo de Ejecución:</label>
-                            <select class="w-full bg-gray-700 text-white text-xs rounded p-1 border border-gray-600 cursor-pointer">
-                                <option>Modo Copiloto (Preguntar antes de operar)</option>
-                                <option>Trading Autónomo (Ejecutar directo)</option>
+                            <select id="executionModeSelect" class="w-full bg-gray-700 text-white text-xs rounded p-1 border border-gray-600 cursor-pointer">
+                                <option value="copilot">Modo Copiloto (Preguntar antes de operar)</option>
+                                <option value="auto">Trading Autónomo (Ejecutar directo)</option>
                             </select>
                         </div>
                     </div>
@@ -183,6 +183,29 @@
                 <div id="terminal" class="flex-1 bg-black p-3 rounded font-mono text-xs text-green-400 overflow-y-auto space-y-2">
                     <p class="text-gray-500">> Sistema iniciado. Esperando conexión con el orquestador...</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Copiloto (Oculto por defecto) -->
+    <div id="copilotModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-gray-800 border border-blue-500 rounded-lg p-6 max-w-sm w-full shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+            <h2 class="text-xl font-bold text-white mb-2 flex items-center">
+                <span class="text-2xl mr-2">⚠️</span> Autorización Requerida
+            </h2>
+            <p id="copilotMessage" class="text-sm text-gray-300 mb-4">
+                El Agente recomienda COMPRAR BTC/USDT.
+            </p>
+            <div class="bg-gray-900 p-3 rounded mb-6 text-xs text-gray-400 font-mono" id="copilotReason">
+                Razonamiento: ...
+            </div>
+            <div class="flex space-x-3">
+                <button id="btnReject" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold transition">
+                    Rechazar
+                </button>
+                <button id="btnApprove" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold transition">
+                    Aprobar Operación
+                </button>
             </div>
         </div>
     </div>
