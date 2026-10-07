@@ -91,22 +91,35 @@ function updateCapitalDisplay() {
     const activeBody = document.getElementById('activePositionsBody');
     if (activeBody) {
         if (portfolio.ASSET <= 0.0001) {
-            activeBody.innerHTML = `<tr id="emptyPositionsRow"><td colspan="5" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td></tr>`;
+            if (!document.getElementById('emptyPositionsRow')) {
+                activeBody.innerHTML = `<tr id="emptyPositionsRow"><td colspan="5" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td></tr>`;
+            }
         } else {
             const baseCoin = currentSymbol.split('/')[0];
             const pnlNoRealizado = (currentPrice - portfolio.entryPrice) * portfolio.ASSET;
             const pnlSign = pnlNoRealizado >= 0 ? '+' : '';
             const pnlColor = pnlNoRealizado >= 0 ? 'text-green-400' : 'text-red-400';
             
-            activeBody.innerHTML = `
-                <tr class="border-b border-gray-700/50 bg-blue-900/10">
-                    <td class="px-4 py-2 font-bold text-white">${baseCoin}</td>
-                    <td class="px-4 py-2 font-mono">${portfolio.ASSET.toFixed(6)}</td>
-                    <td class="px-4 py-2 font-mono">$${portfolio.entryPrice.toLocaleString()}</td>
-                    <td class="px-4 py-2 font-mono">$${currentPrice.toLocaleString()}</td>
-                    <td class="px-4 py-2 font-bold ${pnlColor}">${pnlSign}$${Math.abs(pnlNoRealizado).toFixed(2)}</td>
-                </tr>
-            `;
+            let activeRow = document.getElementById('activePositionRow');
+            if (!activeRow) {
+                activeBody.innerHTML = `
+                    <tr id="activePositionRow" class="border-b border-gray-700/50 bg-blue-900/10">
+                        <td class="px-4 py-2 font-bold text-white" id="apCoin"></td>
+                        <td class="px-4 py-2 font-mono" id="apAmount"></td>
+                        <td class="px-4 py-2 font-mono" id="apEntry"></td>
+                        <td class="px-4 py-2 font-mono" id="apCurrent"></td>
+                        <td class="px-4 py-2 font-bold" id="apPnl"></td>
+                    </tr>
+                `;
+            }
+            document.getElementById('apCoin').innerText = baseCoin;
+            document.getElementById('apAmount').innerText = portfolio.ASSET.toFixed(6);
+            document.getElementById('apEntry').innerText = `$${portfolio.entryPrice.toLocaleString()}`;
+            document.getElementById('apCurrent').innerText = `$${currentPrice.toLocaleString()}`;
+            
+            const pnlCell = document.getElementById('apPnl');
+            pnlCell.className = `px-4 py-2 font-bold ${pnlColor}`;
+            pnlCell.innerText = `${pnlSign}$${Math.abs(pnlNoRealizado).toFixed(2)}`;
         }
     }
 }
