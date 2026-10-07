@@ -84,6 +84,7 @@ window.addEventListener('resize', () => {
     chart.applyOptions({ width: chartContainer.clientWidth });
 });
 
+// Ciclo de IA (Cada 15 segundos)
 let isAgentActive = false;
 let simulateInterval;
 
@@ -95,7 +96,7 @@ agentToggle.addEventListener('click', () => {
         agentToggle.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
         statusText.innerText = 'ANALIZANDO...';
         statusText.className = 'font-bold text-green-400 animate-pulse';
-        logToTerminal('Agente activado.', 'info');
+        logToTerminal('Agente activado. Iniciando análisis cuantitativo.', 'info');
         
         simulateInterval = setInterval(async () => {
             logToTerminal('Consultando agente de Python...', 'info');
@@ -110,13 +111,6 @@ agentToggle.addEventListener('click', () => {
                     
                     logToTerminal(`[${data.signal}] RSI: ${data.indicators.rsi} | SMA20: ${data.indicators.sma_20}`, 'warn');
                     logToTerminal(`Razonamiento: ${data.reason}`, logType);
-                    
-                    // Actualizar el gráfico y el precio en vivo
-                    if (data.latest_candle) {
-                        candleSeries.update(data.latest_candle);
-                        const currentPriceElement = document.getElementById('currentPrice');
-                        currentPriceElement.innerText = `$${data.latest_candle.close.toLocaleString()}`;
-                    }
                 } else {
                     logToTerminal('Error de análisis: ' + data.error, 'error');
                 }
@@ -134,6 +128,22 @@ agentToggle.addEventListener('click', () => {
         logToTerminal('Agente detenido.', 'warn');
     }
 });
+
+// Ciclo de Gráfico en Vivo (Cada 2 segundos) para que se mueva rápido
+setInterval(async () => {
+    try {
+        const response = await fetch('http://localhost:8765/api/market/history?symbol=BTC/USDT&timeframe=1m');
+        const data = await response.json();
+        if (data && data.length > 0) {
+            const latest_candle = data[data.length - 1];
+            candleSeries.update(latest_candle);
+            const currentPriceElement = document.getElementById('currentPrice');
+            currentPriceElement.innerText = `$${latest_candle.close.toLocaleString()}`;
+        }
+    } catch (err) {
+        // Silencioso para no ensuciar la consola
+    }
+}, 2000);
 
 document.getElementById('clearLogs').addEventListener('click', () => {
     terminal.innerHTML = '';
