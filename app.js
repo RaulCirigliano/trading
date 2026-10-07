@@ -63,11 +63,17 @@ const symbolSelect = document.getElementById('symbolSelect');
 let currentSymbol = symbolSelect.value;
 let currentPrice = 0;
 
-// Variables de Simulación (Paper Trading)
-let portfolio = {
+// Variables de Simulación (Paper Trading) persistentes en el navegador
+let portfolio = JSON.parse(localStorage.getItem('ai_portfolio')) || {
     USDT: 100.00,
     ASSET: 0,
     entryPrice: 0
+};
+
+// Función de reseteo para limpiar la memoria si el usuario quiere empezar de cero
+window.resetearCuenta = function() {
+    localStorage.removeItem('ai_portfolio');
+    location.reload();
 };
 
 function updateCapitalDisplay() {
@@ -395,6 +401,10 @@ function executeTrade(signal, baseCoin, price, mode = 'Automático') {
         portfolio.entryPrice = 0;
         logToTerminal(`💵 SIMULACIÓN: VENDIDO ${baseCoin} a $${price.toLocaleString()}. Nuevo Saldo USDT: $${portfolio.USDT.toFixed(2)}`, 'error');
     }
+    
+    // Guardar en el navegador (Persistencia)
+    localStorage.setItem('ai_portfolio', JSON.stringify(portfolio));
+    
     updateCapitalDisplay();
     addTradeToHistory(signal, baseCoin, price, 'Ejecutada', mode);
 }
