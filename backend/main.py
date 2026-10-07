@@ -155,6 +155,13 @@ def get_analysis(symbol: str = "BTC/USDT", timeframe: str = "1h"):
                 "sma_20": round(latest['sma_20'], 2) if not pd.isna(latest['sma_20']) else None,
                 "sma_50": round(latest['sma_50'], 2) if not pd.isna(latest['sma_50']) else None,
                 "current_price": latest['close']
+            },
+            "latest_candle": {
+                "time": int(latest['timestamp'] / 1000),
+                "open": latest['open'],
+                "high": latest['high'],
+                "low": latest['low'],
+                "close": latest['close']
             }
         }
     except Exception as e:

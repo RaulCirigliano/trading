@@ -110,6 +110,13 @@ agentToggle.addEventListener('click', () => {
                     
                     logToTerminal(`[${data.signal}] RSI: ${data.indicators.rsi} | SMA20: ${data.indicators.sma_20}`, 'warn');
                     logToTerminal(`Razonamiento: ${data.reason}`, logType);
+                    
+                    // Actualizar el gráfico y el precio en vivo
+                    if (data.latest_candle) {
+                        candleSeries.update(data.latest_candle);
+                        const currentPriceElement = document.getElementById('currentPrice');
+                        currentPriceElement.innerText = `$${data.latest_candle.close.toLocaleString()}`;
+                    }
                 } else {
                     logToTerminal('Error de análisis: ' + data.error, 'error');
                 }
