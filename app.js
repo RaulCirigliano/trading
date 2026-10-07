@@ -92,7 +92,7 @@ function updateCapitalDisplay() {
     if (activeBody) {
         if (portfolio.ASSET <= 0.0001) {
             if (!document.getElementById('emptyPositionsRow')) {
-                activeBody.innerHTML = `<tr id="emptyPositionsRow"><td colspan="5" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td></tr>`;
+                activeBody.innerHTML = `<tr id="emptyPositionsRow"><td colspan="6" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td></tr>`;
             }
         } else {
             const baseCoin = currentSymbol.split('/')[0];
@@ -109,6 +109,9 @@ function updateCapitalDisplay() {
                         <td class="px-4 py-2 font-mono" id="apEntry"></td>
                         <td class="px-4 py-2 font-mono" id="apCurrent"></td>
                         <td class="px-4 py-2 font-bold" id="apPnl"></td>
+                        <td class="px-4 py-2 text-right">
+                            <button onclick="window.forceClosePosition()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-bold shadow-lg transition duration-200 ease-in-out transform hover:scale-105 border border-red-500">✖ CERRAR</button>
+                        </td>
                     </tr>
                 `;
             }
@@ -429,3 +432,18 @@ document.getElementById('btnApprove').addEventListener('click', () => {
     agentToggle.click(); // Apaga
     setTimeout(() => agentToggle.click(), 500); // Prende
 });
+
+// Cierre Manual de Emergencia
+window.forceClosePosition = function() {
+    if (portfolio.ASSET > 0) {
+        logToTerminal(`⚠️ CIERRE MANUAL: El usuario forzó el cierre de la posición en curso.`, 'error');
+        const baseCoin = currentSymbol.split('/')[0];
+        executeTrade('VENDER', baseCoin, currentPrice, 'Manual');
+        
+        // Apagar el agente temporalmente si estaba encendido para evitar que compre inmediatamente
+        if (isAgentActive) {
+            agentToggle.click();
+            logToTerminal(`Agente detenido automáticamente por cierre manual. Vuelve a activarlo cuando desees.`, 'warn');
+        }
+    }
+};
