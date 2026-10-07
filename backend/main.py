@@ -104,7 +104,7 @@ def get_analysis(symbol: str = "BTC/USDT", timeframe: str = "1h"):
         else:
             try:
                 # Inicializar el cerebro (Gemini 2.5 Flash es rapidísimo para esto)
-                llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.2)
+                llm = ChatGoogleGenerativeAI(model="gemini-3.8-flash", google_api_key=api_key, temperature=0.2)
                 
                 # Armar el contexto para el Agente
                 prompt = PromptTemplate.from_template(
