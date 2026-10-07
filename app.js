@@ -65,7 +65,7 @@ let currentPrice = 0;
 
 // Variables de Simulación (Paper Trading)
 let portfolio = {
-    USDT: 10000.00,
+    USDT: 100.00,
     ASSET: 0,
     entryPrice: 0
 };
@@ -77,8 +77,8 @@ function updateCapitalDisplay() {
     // Calcular Rendimiento Total
     const pnlDisplay = document.getElementById('pnlDisplay');
     if (pnlDisplay) {
-        const diff = total - 10000.00;
-        const percent = (diff / 10000.00) * 100;
+        const diff = total - 100.00;
+        const percent = (diff / 100.00) * 100;
         
         const sign = diff >= 0 ? '+' : '';
         const color = diff >= 0 ? (diff > 0 ? 'text-green-400' : 'text-gray-400') : 'text-red-400';
