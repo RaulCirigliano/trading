@@ -122,9 +122,10 @@ agentToggle.addEventListener('click', () => {
         logToTerminal('Agente activado. Iniciando análisis cuantitativo.', 'info');
         
         simulateInterval = setInterval(async () => {
-            logToTerminal(`Consultando agente de Python (${currentSymbol})...`, 'info');
+            const engine = document.getElementById('engineSelect')?.value || 'local';
+            logToTerminal(`Consultando Orquestador (${currentSymbol}) vía ${engine.toUpperCase()}...`, 'info');
             try {
-                const response = await fetch(`http://localhost:8765/api/market/analysis?symbol=${currentSymbol}&timeframe=1m`);
+                const response = await fetch(`http://localhost:8765/api/market/analysis?symbol=${currentSymbol}&timeframe=1m&engine=${engine}`);
                 const data = await response.json();
                 
                 if (data && !data.error) {
