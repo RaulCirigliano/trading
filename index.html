@@ -186,6 +186,31 @@
             </div>
         </div>
 
+        <!-- Posiciones Activas -->
+        <div class="mt-6 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
+            <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                <span class="mr-2">💼</span> Posiciones Activas
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-400">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-900">
+                        <tr>
+                            <th class="px-4 py-2 rounded-tl">Activo</th>
+                            <th class="px-4 py-2">Cantidad</th>
+                            <th class="px-4 py-2">Precio de Entrada</th>
+                            <th class="px-4 py-2">Precio Actual</th>
+                            <th class="px-4 py-2 rounded-tr">PnL No Realizado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activePositionsBody" class="divide-y divide-gray-700">
+                        <tr id="emptyPositionsRow">
+                            <td colspan="5" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Historial de Operaciones -->
         <div class="mt-6 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
             <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">

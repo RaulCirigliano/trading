@@ -66,14 +66,15 @@ let currentPrice = 0;
 // Variables de Simulación (Paper Trading)
 let portfolio = {
     USDT: 10000.00,
-    ASSET: 0
+    ASSET: 0,
+    entryPrice: 0
 };
 
 function updateCapitalDisplay() {
     const total = portfolio.USDT + (portfolio.ASSET * currentPrice);
     document.getElementById('capitalDisplay').innerText = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     
-    // Calcular Rendimiento
+    // Calcular Rendimiento Total
     const pnlDisplay = document.getElementById('pnlDisplay');
     if (pnlDisplay) {
         const diff = total - 10000.00;
@@ -84,6 +85,29 @@ function updateCapitalDisplay() {
         
         pnlDisplay.className = `font-bold ${color}`;
         pnlDisplay.innerText = `${sign}$${Math.abs(diff).toFixed(2)} (${sign}${percent.toFixed(2)}%)`;
+    }
+
+    // Actualizar Tabla de Posiciones Activas
+    const activeBody = document.getElementById('activePositionsBody');
+    if (activeBody) {
+        if (portfolio.ASSET <= 0.0001) {
+            activeBody.innerHTML = `<tr id="emptyPositionsRow"><td colspan="5" class="px-4 py-4 text-center text-gray-600 italic">No tienes posiciones activas (100% liquidez en USDT).</td></tr>`;
+        } else {
+            const baseCoin = currentSymbol.split('/')[0];
+            const pnlNoRealizado = (currentPrice - portfolio.entryPrice) * portfolio.ASSET;
+            const pnlSign = pnlNoRealizado >= 0 ? '+' : '';
+            const pnlColor = pnlNoRealizado >= 0 ? 'text-green-400' : 'text-red-400';
+            
+            activeBody.innerHTML = `
+                <tr class="border-b border-gray-700/50 bg-blue-900/10">
+                    <td class="px-4 py-2 font-bold text-white">${baseCoin}</td>
+                    <td class="px-4 py-2 font-mono">${portfolio.ASSET.toFixed(6)}</td>
+                    <td class="px-4 py-2 font-mono">$${portfolio.entryPrice.toLocaleString()}</td>
+                    <td class="px-4 py-2 font-mono">$${currentPrice.toLocaleString()}</td>
+                    <td class="px-4 py-2 font-bold ${pnlColor}">${pnlSign}$${Math.abs(pnlNoRealizado).toFixed(2)}</td>
+                </tr>
+            `;
+        }
     }
 }
 
@@ -315,11 +339,13 @@ function executeTrade(signal, baseCoin, price, mode = 'Automático') {
         const cantidadAComprar = portfolio.USDT / price;
         portfolio.ASSET += cantidadAComprar;
         portfolio.USDT = 0;
+        portfolio.entryPrice = price;
         logToTerminal(`💰 SIMULACIÓN: COMPRADO ${cantidadAComprar.toFixed(4)} ${baseCoin} a $${price.toLocaleString()}`, 'action');
     } else if (signal === 'VENDER') {
         const dolaresObtenidos = portfolio.ASSET * price;
         portfolio.USDT += dolaresObtenidos;
         portfolio.ASSET = 0;
+        portfolio.entryPrice = 0;
         logToTerminal(`💵 SIMULACIÓN: VENDIDO ${baseCoin} a $${price.toLocaleString()}. Nuevo Saldo USDT: $${portfolio.USDT.toFixed(2)}`, 'error');
     }
     updateCapitalDisplay();
