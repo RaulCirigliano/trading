@@ -2,3 +2,5 @@ fastapi
 uvicorn
 ccxt
 pydantic
+pandas
+ta

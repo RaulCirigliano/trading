@@ -97,9 +97,26 @@ agentToggle.addEventListener('click', () => {
         statusText.className = 'font-bold text-green-400 animate-pulse';
         logToTerminal('Agente activado.', 'info');
         
-        simulateInterval = setInterval(() => {
-            logToTerminal('Analizando order book...', 'info');
-        }, 3000);
+        simulateInterval = setInterval(async () => {
+            logToTerminal('Consultando agente de Python...', 'info');
+            try {
+                const response = await fetch('http://localhost:8765/api/market/analysis?symbol=BTC/USDT&timeframe=1h');
+                const data = await response.json();
+                
+                if (data && !data.error) {
+                    let logType = 'info';
+                    if (data.signal === 'COMPRAR') logType = 'action';
+                    if (data.signal === 'VENDER') logType = 'error';
+                    
+                    logToTerminal(`[${data.signal}] RSI: ${data.indicators.rsi} | SMA20: ${data.indicators.sma_20}`, 'warn');
+                    logToTerminal(`Razonamiento: ${data.reason}`, logType);
+                } else {
+                    logToTerminal('Error de análisis: ' + data.error, 'error');
+                }
+            } catch (err) {
+                logToTerminal('Fallo de conexión con el Agente Python.', 'error');
+            }
+        }, 8000);
     } else {
         agentToggle.innerText = 'Activar Agente';
         agentToggle.classList.replace('bg-red-600', 'bg-blue-600');

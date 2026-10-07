@@ -61,3 +61,56 @@ def get_history(symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 10
         return formatted_data
     except Exception as e:
         return {"error": str(e)}
+
+@app.get("/api/market/analysis")
+def get_analysis(symbol: str = "BTC/USDT", timeframe: str = "1h"):
+    """
+    Realiza análisis técnico cuantitativo de las últimas velas.
+    """
+    try:
+        import pandas as pd
+        import ta
+        
+        ohlcv = exchange.fetch_ohlcv(symbol, timeframe, limit=100)
+        df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+        
+        # Calcular RSI (14 periodos)
+        df['rsi'] = ta.momentum.RSIIndicator(close=df['close'], window=14).rsi()
+        
+        # Calcular Medias Móviles (SMA 20 y SMA 50)
+        df['sma_20'] = ta.trend.SMAIndicator(close=df['close'], window=20).sma_indicator()
+        df['sma_50'] = ta.trend.SMAIndicator(close=df['close'], window=50).sma_indicator()
+        
+        latest = df.iloc[-1]
+        previous = df.iloc[-2]
+        
+        # Lógica básica del Agente Cuantitativo
+        signal = "MANTENER"
+        reason = "El mercado está en zona neutral."
+        
+        if latest['rsi'] < 30:
+            signal = "COMPRAR"
+            reason = f"RSI en sobreventa ({latest['rsi']:.2f}). Posible rebote."
+        elif latest['rsi'] > 70:
+            signal = "VENDER"
+            reason = f"RSI en sobrecompra ({latest['rsi']:.2f}). Posible corrección."
+        elif previous['sma_20'] < previous['sma_50'] and latest['sma_20'] > latest['sma_50']:
+            signal = "COMPRAR"
+            reason = "Cruce dorado detectado (SMA 20 cruza hacia arriba SMA 50)."
+        elif previous['sma_20'] > previous['sma_50'] and latest['sma_20'] < latest['sma_50']:
+            signal = "VENDER"
+            reason = "Cruce de la muerte detectado (SMA 20 cruza hacia abajo SMA 50)."
+            
+        return {
+            "symbol": symbol,
+            "signal": signal,
+            "reason": reason,
+            "indicators": {
+                "rsi": round(latest['rsi'], 2) if not pd.isna(latest['rsi']) else None,
+                "sma_20": round(latest['sma_20'], 2) if not pd.isna(latest['sma_20']) else None,
+                "sma_50": round(latest['sma_50'], 2) if not pd.isna(latest['sma_50']) else None,
+                "current_price": latest['close']
+            }
+        }
+    except Exception as e:
+        return {"error": str(e)}
