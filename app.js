@@ -31,38 +31,25 @@ const candleSeries = chart.addCandlestickSeries({
     wickUpColor: '#22c55e',
 });
 
-// Generar datos ficticios (Mock data) para el prototipo
-function generateMockData() {
-    let data = [];
-    let time = Math.floor(Date.now() / 1000) - 100 * 3600; // Hace 100 horas
-    let open = 60000;
-    
-    for (let i = 0; i < 100; i++) {
-        let close = open + (Math.random() - 0.5) * 1000;
-        let high = Math.max(open, close) + Math.random() * 500;
-        let low = Math.min(open, close) - Math.random() * 500;
-        
-        data.push({
-            time: time,
-            open: parseFloat(open.toFixed(2)),
-            high: parseFloat(high.toFixed(2)),
-            low: parseFloat(low.toFixed(2)),
-            close: parseFloat(close.toFixed(2))
-        });
-        
-        open = close;
-        time += 3600; // 1 hora en segundos
+// Obtener datos reales del motor Python
+async function fetchMarketData() {
+    try {
+        const response = await fetch('http://localhost:8000/api/market/history?symbol=BTC/USDT&timeframe=1h');
+        const data = await response.json();
+        if (data && !data.error) {
+            candleSeries.setData(data);
+            const currentPriceElement = document.getElementById('currentPrice');
+            currentPrice = data[data.length - 1].close; // Actualizar variable global
+            currentPriceElement.innerText = `$${currentPrice.toLocaleString()}`;
+        }
+    } catch (error) {
+        console.error("Error conectando al motor:", error);
     }
-    return data;
 }
 
-const mockData = generateMockData();
-candleSeries.setData(mockData);
-
-// Mostrar precio actual simulado
-const currentPriceElement = document.getElementById('currentPrice');
-let currentPrice = mockData[mockData.length - 1].close;
-currentPriceElement.innerText = `$${currentPrice.toLocaleString()}`;
+// Cargar datos al iniciar
+let currentPrice = 0;
+fetchMarketData();
 
 // Manejo del redimensionamiento de la ventana
 window.addEventListener('resize', () => {
