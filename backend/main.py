@@ -49,7 +49,7 @@ def get_history(symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 10
         # Lo formateamos para que Lightweight Charts (nuestro frontend) lo entienda fácilmente
         formatted_data = [
             {
-                "time": candle[0] / 1000,  # Convertimos ms a segundos
+                "time": int(candle[0] / 1000),  # Convertimos ms a segundos (debe ser entero)
                 "open": candle[1],
                 "high": candle[2],
                 "low": candle[3],
