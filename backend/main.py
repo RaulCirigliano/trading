@@ -70,6 +70,53 @@ def get_history(symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 10
     except Exception as e:
         return {"error": str(e)}
 
+@app.get("/api/market/sentiment")
+def get_sentiment():
+    """
+    Agente de Sentimiento: Lee noticias de CoinDesk y calcula el sentimiento
+    usando Vader (NLP) sin necesidad de gastar saldo de Gemini.
+    """
+    try:
+        import feedparser
+        from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+        
+        feed = feedparser.parse('https://www.coindesk.com/arc/outboundfeeds/rss/')
+        analyzer = SentimentIntensityAnalyzer()
+        
+        total_score = 0
+        news_list = []
+        
+        # Analizar los últimos 5 titulares
+        for entry in feed.entries[:5]:
+            title = entry.title
+            # Vader está optimizado para inglés, lo cual es perfecto para CoinDesk
+            score = analyzer.polarity_scores(title)
+            compound = score['compound'] # Va de -1 (muy negativo) a 1 (muy positivo)
+            total_score += compound
+            
+            news_list.append({
+                "title": title,
+                "score": round(compound, 2)
+            })
+            
+        avg_score = total_score / 5
+        
+        # Determinar sentimiento general
+        if avg_score > 0.15:
+            estado = "BULLISH"
+        elif avg_score < -0.15:
+            estado = "BEARISH"
+        else:
+            estado = "NEUTRAL"
+            
+        return {
+            "score": round(avg_score, 2),
+            "estado": estado,
+            "noticias": news_list
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/api/market/analysis")
 def get_analysis(symbol: str = "BTC/USDT", timeframe: str = "1h"):
     """

@@ -160,6 +160,49 @@ setInterval(async () => {
     }
 }, 2000);
 
+// Agente Sentimiento (Cada 60 segundos)
+async function updateSentiment() {
+    try {
+        const response = await fetch('http://localhost:8765/api/market/sentiment');
+        const data = await response.json();
+        if (data && !data.error) {
+            const badge = document.getElementById('sentimentScoreBadge');
+            const container = document.getElementById('sentimentNewsContainer');
+            
+            badge.innerText = `${data.score} (${data.estado})`;
+            if (data.estado === 'BULLISH') {
+                badge.className = 'text-xs bg-green-900 text-green-400 px-2 py-1 rounded font-bold';
+            } else if (data.estado === 'BEARISH') {
+                badge.className = 'text-xs bg-red-900 text-red-400 px-2 py-1 rounded font-bold';
+            } else {
+                badge.className = 'text-xs bg-gray-900 text-gray-400 px-2 py-1 rounded font-bold';
+            }
+            
+            container.innerHTML = '';
+            data.noticias.forEach(news => {
+                let colorClass = 'border-gray-500';
+                if (news.score > 0) colorClass = 'border-green-500';
+                if (news.score < 0) colorClass = 'border-red-500';
+                
+                const div = document.createElement('div');
+                div.className = `bg-gray-900 p-2 rounded border-l-2 ${colorClass}`;
+                div.innerHTML = `
+                    <p class="text-[10px] text-gray-400 flex justify-between">
+                        <span>📰 CoinDesk</span>
+                        <span>Score: ${news.score}</span>
+                    </p>
+                    <p class="text-xs text-gray-200 mt-1">${news.title}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+    } catch (err) {
+        console.error("Fallo el Agente de Sentimiento", err);
+    }
+}
+updateSentiment();
+setInterval(updateSentiment, 60000);
+
 document.getElementById('clearLogs').addEventListener('click', () => {
     terminal.innerHTML = '';
 });

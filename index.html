@@ -88,11 +88,11 @@
                     <div class="flex justify-between items-center bg-gray-700 p-2 rounded">
                         <div>
                             <p class="text-sm font-semibold text-purple-400">📰 Agente Sentimiento</p>
-                            <p class="text-xs text-gray-400">Gemini leyendo noticias</p>
+                            <p class="text-xs text-gray-400">NLP Leyendo Noticias</p>
                         </div>
-                        <label class="relative inline-flex items-center cursor-not-allowed opacity-50">
-                            <input type="checkbox" disabled class="sr-only peer">
-                            <div class="w-9 h-5 bg-gray-600 rounded-full"></div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked id="sentimentToggle" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500"></div>
                         </label>
                     </div>
 
@@ -115,6 +115,18 @@
                         <option>Modo Copiloto (Me pregunta antes de operar)</option>
                         <option>Trading Autónomo (Ejecuta directo en Binance)</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Radar de Sentimiento -->
+            <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
+                <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
+                    <h2 class="text-md font-semibold text-white">📰 Radar de Sentimiento</h2>
+                    <span id="sentimentScoreBadge" class="text-xs bg-gray-900 text-gray-400 px-2 py-1 rounded font-bold">ESPERANDO...</span>
+                </div>
+                
+                <div id="sentimentNewsContainer" class="space-y-3">
+                    <p class="text-xs text-gray-500 text-center">Iniciando Agente NLP...</p>
                 </div>
             </div>
 
