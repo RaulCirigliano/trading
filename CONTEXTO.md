@@ -76,3 +76,11 @@ El creador de esta aplicación comprendió una dura realidad: el trading manual 
 
 Al conocer el verdadero poder de la Inteligencia Artificial y la programación, el objetivo de este proyecto es nivelar el campo de juego. Se busca construir un "Escudo" o "Tanque de Guerra" algorítmico que elimine por completo el factor emocional (la principal causa de ruina financiera). 
 Mediante reglas matemáticas estrictas (MACD, Bollinger), un Agente de Riesgo inflexible (Stop Loss al 1%) y un simulador con dinero ficticio hiperrealista, esta herramienta busca demostrar que la única posibilidad real de éxito para un inversor minorista es apoyarse en la disciplina inquebrantable del software, obligándolo a ser rentable en simulación antes de arriesgar un solo centavo real.
+
+## Log de Funcionalidades Implementadas (Última Sesión)
+- **Motor Cuantitativo (MACD & Bollinger):** Lógica matemática de francotirador en el backend para evitar ruido de mercado.
+- **Agente de Riesgo Inflexible:** Take Profit automático al +1.5% y Stop Loss de emergencia al -1.0%.
+- **Gestión de Capital (DCA):** Compras fraccionadas del 25% del capital total para permitir promediar precios (Dollar Cost Averaging).
+- **Botón de Pánico (Cierre Manual):** Control absoluto para vender inmediatamente a mercado ignorando a la IA.
+- **Persistencia de Datos:** El simulador guarda el progreso del portfolio en `localStorage` (evitando pérdida de dinero virtual al refrescar).
+- **Capital Realista:** Ajuste de capital inicial de prueba a $100 USDT para entrenamiento psicológico realista del trader humano.
