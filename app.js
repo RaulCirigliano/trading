@@ -170,6 +170,13 @@ async function updateSentiment() {
             const container = document.getElementById('sentimentNewsContainer');
             
             badge.innerText = `${data.score} (${data.estado})`;
+            
+            const needle = document.getElementById('sentimentNeedle');
+            if (needle) {
+                const percent = ((data.score + 1) / 2) * 100;
+                needle.style.left = `${Math.max(0, Math.min(100, percent))}%`;
+            }
+            
             if (data.estado === 'BULLISH') {
                 badge.className = 'text-xs bg-green-900 text-green-400 px-2 py-1 rounded font-bold';
             } else if (data.estado === 'BEARISH') {

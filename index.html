@@ -124,6 +124,22 @@
                     <h2 class="text-md font-semibold text-white">📰 Radar de Sentimiento</h2>
                     <span id="sentimentScoreBadge" class="text-xs bg-gray-900 text-gray-400 px-2 py-1 rounded font-bold">ESPERANDO...</span>
                 </div>
+
+                <!-- Termómetro Visual de Sentimiento -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-[10px] text-gray-500 mb-1">
+                        <span>Pánico (-1)</span>
+                        <span>Neutral (0)</span>
+                        <span>Euforia (+1)</span>
+                    </div>
+                    <div class="relative w-full h-3 bg-gray-700 rounded-full overflow-hidden flex">
+                        <div class="h-full bg-gradient-to-r from-red-600 to-red-400" style="width: 33%"></div>
+                        <div class="h-full bg-gradient-to-r from-gray-500 to-gray-400" style="width: 34%"></div>
+                        <div class="h-full bg-gradient-to-r from-green-400 to-green-600" style="width: 33%"></div>
+                        <!-- Aguja Indicadora -->
+                        <div id="sentimentNeedle" class="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_5px_white] transition-all duration-500" style="left: 50%;"></div>
+                    </div>
+                </div>
                 
                 <div id="sentimentNewsContainer" class="space-y-3">
                     <p class="text-xs text-gray-500 text-center">Iniciando Agente NLP...</p>
