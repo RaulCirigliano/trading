@@ -39,7 +39,7 @@ const candleSeries = chart.addCandlestickSeries({
 async function fetchMarketData() {
     try {
         logToTerminal('Conectando al motor Python para obtener velas...', 'info');
-        const response = await fetch('http://localhost:8000/api/market/history?symbol=BTC/USDT&timeframe=1h');
+        const response = await fetch('http://localhost:8765/api/market/history?symbol=BTC/USDT&timeframe=1h');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const data = await response.json();
