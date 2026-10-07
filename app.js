@@ -1,6 +1,5 @@
 // Elementos de UI
 const terminal = document.getElementById('terminal');
-const statusText = document.getElementById('statusText');
 const agentToggle = document.getElementById('agentToggle');
 
 function logToTerminal(message, type = 'info') {
@@ -94,8 +93,6 @@ agentToggle.addEventListener('click', () => {
         agentToggle.innerText = 'Detener Agente (Kill Switch)';
         agentToggle.classList.replace('bg-blue-600', 'bg-red-600');
         agentToggle.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
-        statusText.innerText = 'ANALIZANDO...';
-        statusText.className = 'font-bold text-green-400 animate-pulse';
         logToTerminal('Agente activado. Iniciando análisis cuantitativo.', 'info');
         
         simulateInterval = setInterval(async () => {
@@ -122,8 +119,6 @@ agentToggle.addEventListener('click', () => {
         agentToggle.innerText = 'Activar Agente';
         agentToggle.classList.replace('bg-red-600', 'bg-blue-600');
         agentToggle.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
-        statusText.innerText = 'INACTIVO';
-        statusText.className = 'font-bold text-yellow-500';
         clearInterval(simulateInterval);
         logToTerminal('Agente detenido.', 'warn');
     }

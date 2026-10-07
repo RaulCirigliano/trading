@@ -67,28 +67,54 @@
 
         <!-- Columna Derecha: Panel de Control del Agente -->
         <div class="space-y-6">
-            <!-- Estado del Agente -->
+            <!-- Estado del Escuadrón de Agentes -->
             <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
-                <h2 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Estado del Agente</h2>
+                <h2 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Escuadrón de IA</h2>
                 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bg-gray-700 p-3 rounded">
-                        <p class="text-xs text-gray-400 uppercase">Estado</p>
-                        <p class="font-bold text-yellow-500" id="statusText">INACTIVO</p>
+                <div class="space-y-3 mb-4">
+                    <!-- Agente Cuantitativo -->
+                    <div class="flex justify-between items-center bg-gray-700 p-2 rounded">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-400">📊 Agente Cuantitativo</p>
+                            <p class="text-xs text-gray-400">Matemáticas, RSI, SMA</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
+                        </label>
                     </div>
-                    <div class="bg-gray-700 p-3 rounded">
-                        <p class="text-xs text-gray-400 uppercase">Sentimiento (Noticias)</p>
-                        <p class="font-bold text-green-400">Alcista (78%)</p>
+
+                    <!-- Agente Sentimiento -->
+                    <div class="flex justify-between items-center bg-gray-700 p-2 rounded">
+                        <div>
+                            <p class="text-sm font-semibold text-purple-400">📰 Agente Sentimiento</p>
+                            <p class="text-xs text-gray-400">Gemini leyendo noticias</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-not-allowed opacity-50">
+                            <input type="checkbox" disabled class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-600 rounded-full"></div>
+                        </label>
+                    </div>
+
+                    <!-- Agente de Riesgo -->
+                    <div class="flex justify-between items-center bg-gray-700 p-2 rounded">
+                        <div>
+                            <p class="text-sm font-semibold text-red-400">🛡️ Agente de Riesgo</p>
+                            <p class="text-xs text-gray-400">Stop Loss, Capital</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-not-allowed opacity-50">
+                            <input type="checkbox" disabled class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-600 rounded-full"></div>
+                        </label>
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <p class="text-xs text-gray-400 uppercase mb-1">Riesgo Permitido por Operación</p>
-                    <input type="range" min="1" max="5" value="2" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
-                    <div class="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>1%</span>
-                        <span>5%</span>
-                    </div>
+                <div class="mb-4 bg-gray-900 p-3 rounded border border-yellow-600/50">
+                    <p class="text-xs text-yellow-500 uppercase font-bold mb-1">Modo de Ejecución</p>
+                    <select class="w-full bg-gray-700 text-white text-sm rounded p-1 border-none focus:ring-0 cursor-pointer">
+                        <option>Modo Copiloto (Me pregunta antes de operar)</option>
+                        <option>Trading Autónomo (Ejecuta directo en Binance)</option>
+                    </select>
                 </div>
             </div>
 
