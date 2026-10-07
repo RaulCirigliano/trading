@@ -60,7 +60,6 @@ async function fetchMarketData() {
 
 // Cargar datos al iniciar
 let currentPrice = 0;
-fetchMarketData();
 
 // Manejo del redimensionamiento de la ventana
 window.addEventListener('resize', () => {
@@ -158,3 +157,6 @@ function addMockPosition() {
     `;
     table.appendChild(tr);
 }
+
+// Inicializar la carga de datos ahora que el DOM y variables están listos
+fetchMarketData();
