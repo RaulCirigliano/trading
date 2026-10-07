@@ -365,11 +365,26 @@ function addTradeToHistory(signal, baseCoin, price, status, mode) {
 
 function executeTrade(signal, baseCoin, price, mode = 'Automático') {
     if (signal === 'COMPRAR') {
-        const cantidadAComprar = portfolio.USDT / price;
+        // Gestión de Capital: 25% por operación (Máx $25 por trade en cuenta de $100)
+        const maxRiesgo = 25.00;
+        const tradeAmount = portfolio.USDT >= maxRiesgo ? maxRiesgo : portfolio.USDT;
+        
+        if (tradeAmount < 5) {
+            logToTerminal('⚠️ Saldo insuficiente para abrir nueva posición.', 'error');
+            return;
+        }
+
+        const cantidadAComprar = tradeAmount / price;
+        
+        // Promediar precio de entrada si el bot hace DCA (compras múltiples)
+        const valorPrevio = portfolio.ASSET * portfolio.entryPrice;
+        const valorNuevo = cantidadAComprar * price;
+        
         portfolio.ASSET += cantidadAComprar;
-        portfolio.USDT = 0;
-        portfolio.entryPrice = price;
-        logToTerminal(`💰 SIMULACIÓN: COMPRADO ${cantidadAComprar.toFixed(4)} ${baseCoin} a $${price.toLocaleString()}`, 'action');
+        portfolio.USDT -= tradeAmount;
+        portfolio.entryPrice = (valorPrevio + valorNuevo) / portfolio.ASSET;
+        
+        logToTerminal(`💰 SIMULACIÓN: COMPRADO ${cantidadAComprar.toFixed(4)} ${baseCoin} a $${price.toLocaleString()} (Inversión: $${tradeAmount.toFixed(2)})`, 'action');
     } else if (signal === 'VENDER') {
         const dolaresObtenidos = portfolio.ASSET * price;
         portfolio.USDT += dolaresObtenidos;
