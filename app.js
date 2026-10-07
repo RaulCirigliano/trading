@@ -234,6 +234,22 @@ setInterval(async () => {
             currentPrice = latest_candle.close;
             currentPriceElement.innerText = `$${currentPrice.toLocaleString()}`;
             updateCapitalDisplay();
+
+            // -- AGENTE DE RIESGO: Stop Loss y Take Profit --
+            if (portfolio.ASSET > 0.0001 && portfolio.entryPrice > 0) {
+                const pnlPct = ((currentPrice - portfolio.entryPrice) / portfolio.entryPrice) * 100;
+                
+                // Stop Loss: Vender si perdemos 1%
+                if (pnlPct <= -1.0) {
+                    logToTerminal(`⚠️ AGENTE DE RIESGO: Stop Loss alcanzado (-1%). Vendiendo para proteger capital.`, 'error');
+                    executeTrade('VENDER', currentSymbol.split('/')[0], currentPrice, 'Stop Loss');
+                }
+                // Take Profit: Vender si ganamos 1.5%
+                else if (pnlPct >= 1.5) {
+                    logToTerminal(`🎯 AGENTE DE RIESGO: Take Profit alcanzado (+1.5%). Asegurando ganancias.`, 'action');
+                    executeTrade('VENDER', currentSymbol.split('/')[0], currentPrice, 'Take Profit');
+                }
+            }
         }
     } catch (err) {
         // Silencioso para no ensuciar la consola

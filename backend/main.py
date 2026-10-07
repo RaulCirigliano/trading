@@ -160,34 +160,55 @@ def get_analysis(symbol: str = "BTC/USDT", timeframe: str = "1m", engine: str = 
         df['sma_20'] = ta.trend.SMAIndicator(close=df['close'], window=20).sma_indicator()
         df['sma_50'] = ta.trend.SMAIndicator(close=df['close'], window=50).sma_indicator()
         
+        # Calcular Bandas de Bollinger y MACD
+        bb = ta.volatility.BollingerBands(close=df['close'], window=20, window_dev=2)
+        df['bb_high'] = bb.bollinger_hband()
+        df['bb_low'] = bb.bollinger_lband()
+        
+        macd = ta.trend.MACD(close=df['close'])
+        df['macd_diff'] = macd.macd_diff() # Histograma MACD
+        
         latest = df.iloc[-1]
         previous = df.iloc[-2]
         
-        # Lógica del Agente Orquestador (IA Gemini vs Matemático)
+        # Lógica del Agente Orquestador (IA Gemini vs Matemático Avanzado)
         signal = "MANTENER"
         reason = "El mercado está en zona neutral."
         
         rsi_val = round(latest['rsi'], 2)
         sma20_val = round(latest['sma_20'], 2)
         price_val = round(latest['close'], 2)
+        
+        macd_curr = latest['macd_diff']
+        macd_prev = previous['macd_diff']
+        bb_low = latest['bb_low']
+        bb_high = latest['bb_high']
 
         if engine == "local":
-            # Agente 100% Cuantitativo y Matemático (Gratis y ultra rápido)
-            if rsi_val < 30 and price_val > sma20_val:
+            # Agente 100% Cuantitativo con MACD y Bandas de Bollinger
+            
+            # Cruces del MACD (Tendencia)
+            cruce_alcista = (macd_prev < 0) and (macd_curr > 0)
+            cruce_bajista = (macd_prev > 0) and (macd_curr < 0)
+            
+            if cruce_alcista and rsi_val < 50:
                 signal = "COMPRAR"
-                reason = "RSI en sobreventa (<30) y precio rompió la SMA 20 al alza."
-            elif rsi_val > 70 and price_val < sma20_val:
+                reason = "Cruce MACD alcista detectado con espacio en RSI."
+            elif cruce_bajista and rsi_val > 50:
                 signal = "VENDER"
-                reason = "RSI en sobrecompra (>70) y precio cayó bajo la SMA 20."
-            elif rsi_val < 20:
+                reason = "Cruce MACD bajista detectado. Fin del impulso."
+            
+            # Estrategia de Rebote (Bollinger Bands + RSI extremo)
+            elif price_val < bb_low and rsi_val < 30:
                 signal = "COMPRAR"
-                reason = "Pánico extremo en el mercado (RSI <20). Posible rebote."
-            elif rsi_val > 80:
+                reason = "Precio perforó la Banda de Bollinger inferior (Pánico)."
+            elif price_val > bb_high and rsi_val > 70:
                 signal = "VENDER"
-                reason = "Euforia extrema (RSI >80). Corrección inminente."
+                reason = "Precio superó la Banda de Bollinger superior (Euforia)."
+                
             else:
                 signal = "MANTENER"
-                reason = f"Esperando confirmación (RSI: {rsi_val}, Precio cerca de SMA 20)."
+                reason = f"MACD neutral, Precio dentro de Bandas. (RSI: {rsi_val})."
                 
         elif engine == "ai":
             from dotenv import load_dotenv
@@ -259,3 +280,7 @@ def get_analysis(symbol: str = "BTC/USDT", timeframe: str = "1m", engine: str = 
         }
     except Exception as e:
         return {"error": str(e)}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8765, reload=True)
