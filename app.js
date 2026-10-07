@@ -20,7 +20,11 @@ const chartOptions = {
 };
 
 const chartContainer = document.getElementById('chart-container');
-const chart = LightweightCharts.createChart(chartContainer, chartOptions);
+const chart = LightweightCharts.createChart(chartContainer, {
+    ...chartOptions,
+    width: chartContainer.clientWidth,
+    height: chartContainer.clientHeight || 400,
+});
 
 const candleSeries = chart.addCandlestickSeries({
     upColor: '#22c55e', // green-500
@@ -34,16 +38,23 @@ const candleSeries = chart.addCandlestickSeries({
 // Obtener datos reales del motor Python
 async function fetchMarketData() {
     try {
+        logToTerminal('Conectando al motor Python para obtener velas...', 'info');
         const response = await fetch('http://localhost:8000/api/market/history?symbol=BTC/USDT&timeframe=1h');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const data = await response.json();
         if (data && !data.error) {
             candleSeries.setData(data);
             const currentPriceElement = document.getElementById('currentPrice');
             currentPrice = data[data.length - 1].close; // Actualizar variable global
             currentPriceElement.innerText = `$${currentPrice.toLocaleString()}`;
+            logToTerminal('Gráfico actualizado con datos reales.', 'action');
+        } else {
+            logToTerminal('Error de datos: ' + data.error, 'error');
         }
     } catch (error) {
         console.error("Error conectando al motor:", error);
+        logToTerminal('Fallo al conectar con FastAPI (¿Error de CORS o apagado?)', 'error');
     }
 }
 

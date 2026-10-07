@@ -8,7 +8,7 @@ app = FastAPI(title="Trading AI API", description="API para el agente de trading
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # Permite cualquier origen durante desarrollo
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
