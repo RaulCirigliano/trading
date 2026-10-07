@@ -116,7 +116,7 @@ agentToggle.addEventListener('click', () => {
             } catch (err) {
                 logToTerminal('Fallo de conexión con el Agente Python.', 'error');
             }
-        }, 8000);
+        }, 60000);
     } else {
         agentToggle.innerText = 'Activar Agente';
         agentToggle.classList.replace('bg-red-600', 'bg-blue-600');
