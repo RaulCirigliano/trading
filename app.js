@@ -52,6 +52,13 @@ const candleSeries = chart.addCandlestickSeries({
     wickDownColor: '#ef4444', wickUpColor: '#22c55e',
 });
 
+const smaSeries = chart.addLineSeries({
+    color: '#3b82f6', // Azul brillante para la SMA 20
+    lineWidth: 2,
+    crosshairMarkerVisible: false,
+    priceLineVisible: false,
+});
+
 let currentPrice = 0;
 
 // Obtener datos reales del motor Python
@@ -64,6 +71,14 @@ async function fetchMarketData() {
         const data = await response.json();
         if (data && !data.error) {
             candleSeries.setData(data);
+            
+            // Extraer y pintar la línea de Media Móvil (SMA 20)
+            const smaData = data
+                .filter(d => d.sma_20 !== undefined)
+                .map(d => ({ time: d.time, value: d.sma_20 }));
+            if (smaData.length > 0) {
+                smaSeries.setData(smaData);
+            }
             const currentPriceElement = document.getElementById('currentPrice');
             currentPrice = data[data.length - 1].close; 
             currentPriceElement.innerText = `$${currentPrice.toLocaleString()}`;
@@ -132,6 +147,11 @@ setInterval(async () => {
         if (data && data.length > 0) {
             const latest_candle = data[data.length - 1];
             candleSeries.update(latest_candle);
+            
+            if (latest_candle.sma_20 !== undefined) {
+                smaSeries.update({ time: latest_candle.time, value: latest_candle.sma_20 });
+            }
+            
             const currentPriceElement = document.getElementById('currentPrice');
             currentPriceElement.innerText = `$${latest_candle.close.toLocaleString()}`;
         }

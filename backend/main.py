@@ -40,24 +40,32 @@ def get_price(symbol: str = "BTC/USDT"):
 @app.get("/api/market/history")
 def get_history(symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 100):
     """
-    Obtiene el histórico de velas (OHLCV) listo para graficar.
+    Obtiene el histórico de velas (OHLCV) listo para graficar con su Media Móvil.
     """
     try:
         # fetch_ohlcv devuelve: [timestamp, open, high, low, close, volume]
         ohlcv = exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
         
-        # Lo formateamos para que Lightweight Charts (nuestro frontend) lo entienda fácilmente
-        formatted_data = [
-            {
-                "time": int(candle[0] / 1000),  # Convertimos ms a segundos (debe ser entero)
-                "open": candle[1],
-                "high": candle[2],
-                "low": candle[3],
-                "close": candle[4],
-                "volume": candle[5]
+        import pandas as pd
+        import ta
+        df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+        df['sma_20'] = ta.trend.SMAIndicator(close=df['close'], window=20).sma_indicator()
+        
+        # Lo formateamos para que Lightweight Charts lo entienda fácilmente
+        formatted_data = []
+        for index, row in df.iterrows():
+            item = {
+                "time": int(row['timestamp'] / 1000),
+                "open": row['open'],
+                "high": row['high'],
+                "low": row['low'],
+                "close": row['close'],
+                "volume": row['volume']
             }
-            for candle in ohlcv
-        ]
+            if not pd.isna(row['sma_20']):
+                item["sma_20"] = round(row['sma_20'], 2)
+            formatted_data.append(item)
+            
         return formatted_data
     except Exception as e:
         return {"error": str(e)}
@@ -104,7 +112,7 @@ def get_analysis(symbol: str = "BTC/USDT", timeframe: str = "1h"):
         else:
             try:
                 # Inicializar el cerebro (Gemini 2.5 Flash es rapidísimo para esto)
-                llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key, temperature=0.2)
+                llm = ChatGoogleGenerativeAI(model="gemini-3.8-flash", google_api_key=api_key, temperature=0.2)
                 
                 # Armar el contexto para el Agente
                 prompt = PromptTemplate.from_template(
