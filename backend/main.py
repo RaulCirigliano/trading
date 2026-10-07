@@ -71,23 +71,34 @@ def get_history(symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 10
         return {"error": str(e)}
 
 @app.get("/api/market/sentiment")
-def get_sentiment(symbol: str = "BTC/USDT"):
+def get_sentiment(symbol: str = "BTC/USDT", source: str = "coindesk"):
     """
-    Agente de Sentimiento: Lee noticias de CoinDesk y filtra solo las que
-    hablan del activo que estamos operando.
+    Agente de Sentimiento con selección de fuente.
     """
     try:
         import feedparser
         from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
         
-        feed = feedparser.parse('https://www.coindesk.com/arc/outboundfeeds/rss/')
-        analyzer = SentimentIntensityAnalyzer()
-        
-        # Extraer el nombre de la moneda (ej. "BTC/USDT" -> "BTC", "Bitcoin")
+        # Mapeo de monedas
         base_asset = symbol.split('/')[0].upper()
-        # Diccionario simple para mapear nombres completos si es necesario
         nombres = {"BTC": "Bitcoin", "ETH": "Ethereum", "SOL": "Solana"}
         nombre_completo = nombres.get(base_asset, base_asset)
+        
+        if source == "twitter":
+            return {
+                "score": 0,
+                "estado": "OFFLINE",
+                "noticias": [
+                    {
+                        "title": "⚠️ La API de Twitter/X requiere configurar una Clave PRO en el archivo .env",
+                        "score": 0
+                    }
+                ]
+            }
+        
+        # Si es CoinDesk
+        feed = feedparser.parse('https://www.coindesk.com/arc/outboundfeeds/rss/')
+        analyzer = SentimentIntensityAnalyzer()
         
         total_score = 0
         news_list = []

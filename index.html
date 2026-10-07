@@ -129,7 +129,13 @@
             <!-- Radar de Sentimiento -->
             <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
-                    <h2 class="text-md font-semibold text-white">📰 Radar de Sentimiento</h2>
+                    <div class="flex items-center space-x-3">
+                        <h2 class="text-md font-semibold text-white">📰 Radar de Sentimiento</h2>
+                        <select id="newsSourceSelect" class="bg-gray-700 text-[10px] text-gray-300 rounded outline-none p-1 cursor-pointer border border-gray-600">
+                            <option value="coindesk">📡 Fuente: CoinDesk (Gratis)</option>
+                            <option value="twitter">🐦 Fuente: Twitter/X (Pro)</option>
+                        </select>
+                    </div>
                     <span id="sentimentScoreBadge" class="text-xs bg-gray-900 text-gray-400 px-2 py-1 rounded font-bold">ESPERANDO...</span>
                 </div>
 

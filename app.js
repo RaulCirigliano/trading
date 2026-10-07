@@ -174,7 +174,8 @@ setInterval(async () => {
 // Agente Sentimiento (Cada 60 segundos)
 async function updateSentiment() {
     try {
-        const response = await fetch(`http://localhost:8765/api/market/sentiment?symbol=${currentSymbol}`);
+        const source = document.getElementById('newsSourceSelect')?.value || 'coindesk';
+        const response = await fetch(`http://localhost:8765/api/market/sentiment?symbol=${currentSymbol}&source=${source}`);
         const data = await response.json();
         if (data && !data.error) {
             const badge = document.getElementById('sentimentScoreBadge');
@@ -220,6 +221,14 @@ async function updateSentiment() {
 }
 updateSentiment();
 setInterval(updateSentiment, 60000);
+
+const newsSourceSelect = document.getElementById('newsSourceSelect');
+if (newsSourceSelect) {
+    newsSourceSelect.addEventListener('change', () => {
+        logToTerminal(`Cambiando fuente de sentimiento a ${newsSourceSelect.value}...`, 'info');
+        updateSentiment();
+    });
+}
 
 document.getElementById('clearLogs').addEventListener('click', () => {
     terminal.innerHTML = '';
