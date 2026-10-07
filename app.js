@@ -72,6 +72,19 @@ let portfolio = {
 function updateCapitalDisplay() {
     const total = portfolio.USDT + (portfolio.ASSET * currentPrice);
     document.getElementById('capitalDisplay').innerText = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    
+    // Calcular Rendimiento
+    const pnlDisplay = document.getElementById('pnlDisplay');
+    if (pnlDisplay) {
+        const diff = total - 10000.00;
+        const percent = (diff / 10000.00) * 100;
+        
+        const sign = diff >= 0 ? '+' : '';
+        const color = diff >= 0 ? (diff > 0 ? 'text-green-400' : 'text-gray-400') : 'text-red-400';
+        
+        pnlDisplay.className = `font-bold ${color}`;
+        pnlDisplay.innerText = `${sign}$${Math.abs(diff).toFixed(2)} (${sign}${percent.toFixed(2)}%)`;
+    }
 }
 
 symbolSelect.addEventListener('change', () => {
@@ -267,7 +280,37 @@ document.getElementById('clearLogs').addEventListener('click', () => {
 });
 
 // -- Funciones de Trading y Copiloto --
-function executeTrade(signal, baseCoin, price) {
+
+function addTradeToHistory(signal, baseCoin, price, status, mode) {
+    const tbody = document.getElementById('tradeHistoryBody');
+    const emptyRow = document.getElementById('emptyHistoryRow');
+    if (emptyRow) emptyRow.remove();
+
+    const timeString = new Date().toLocaleTimeString();
+    
+    // Colores según estado
+    let statusClass = 'text-gray-400';
+    if (status === 'Ejecutada') statusClass = 'text-green-400 font-bold';
+    if (status === 'Rechazada') statusClass = 'text-red-400 font-bold';
+    
+    let typeClass = signal === 'COMPRAR' ? 'text-green-500' : 'text-red-500';
+
+    const tr = document.createElement('tr');
+    tr.className = 'border-b border-gray-700/50 hover:bg-gray-700/20';
+    tr.innerHTML = `
+        <td class="px-4 py-2">${timeString}</td>
+        <td class="px-4 py-2 font-bold">${baseCoin}/USDT</td>
+        <td class="px-4 py-2 ${typeClass}">${signal}</td>
+        <td class="px-4 py-2 font-mono">$${price.toLocaleString()}</td>
+        <td class="px-4 py-2 ${statusClass}">${status}</td>
+        <td class="px-4 py-2 text-xs">${mode}</td>
+    `;
+    
+    // Insertar al principio
+    tbody.insertBefore(tr, tbody.firstChild);
+}
+
+function executeTrade(signal, baseCoin, price, mode = 'Automático') {
     if (signal === 'COMPRAR') {
         const cantidadAComprar = portfolio.USDT / price;
         portfolio.ASSET += cantidadAComprar;
@@ -280,6 +323,7 @@ function executeTrade(signal, baseCoin, price) {
         logToTerminal(`💵 SIMULACIÓN: VENDIDO ${baseCoin} a $${price.toLocaleString()}. Nuevo Saldo USDT: $${portfolio.USDT.toFixed(2)}`, 'error');
     }
     updateCapitalDisplay();
+    addTradeToHistory(signal, baseCoin, price, 'Ejecutada', mode);
 }
 
 let pendingTrade = null;
@@ -294,7 +338,11 @@ function showCopilotModal(signal, reason, baseCoin, price) {
 
 document.getElementById('btnReject').addEventListener('click', () => {
     modal.classList.add('hidden');
-    logToTerminal('❌ Operación rechazada por el usuario.', 'warn');
+    if (pendingTrade) {
+        logToTerminal('❌ Operación rechazada por el usuario.', 'warn');
+        addTradeToHistory(pendingTrade.signal, pendingTrade.baseCoin, pendingTrade.price, 'Rechazada', 'Copiloto');
+        pendingTrade = null;
+    }
     // Reactivar ciclo
     agentToggle.click(); // Apaga
     setTimeout(() => agentToggle.click(), 500); // Prende
@@ -304,7 +352,7 @@ document.getElementById('btnApprove').addEventListener('click', () => {
     modal.classList.add('hidden');
     if (pendingTrade) {
         logToTerminal('✅ Operación aprobada por el usuario.', 'action');
-        executeTrade(pendingTrade.signal, pendingTrade.baseCoin, pendingTrade.price);
+        executeTrade(pendingTrade.signal, pendingTrade.baseCoin, pendingTrade.price, 'Copiloto');
         pendingTrade = null;
     }
     // Reactivar ciclo
