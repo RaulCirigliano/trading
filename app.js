@@ -59,7 +59,7 @@ let currentPrice = 0;
 async function fetchMarketData() {
     try {
         logToTerminal('Conectando al motor Python para obtener velas...', 'info');
-        const response = await fetch('http://localhost:8765/api/market/history?symbol=BTC/USDT&timeframe=1h');
+        const response = await fetch('http://localhost:8765/api/market/history?symbol=BTC/USDT&timeframe=1m');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const data = await response.json();
@@ -100,7 +100,7 @@ agentToggle.addEventListener('click', () => {
         simulateInterval = setInterval(async () => {
             logToTerminal('Consultando agente de Python...', 'info');
             try {
-                const response = await fetch('http://localhost:8765/api/market/analysis?symbol=BTC/USDT&timeframe=1h');
+                const response = await fetch('http://localhost:8765/api/market/analysis?symbol=BTC/USDT&timeframe=1m');
                 const data = await response.json();
                 
                 if (data && !data.error) {
@@ -123,7 +123,7 @@ agentToggle.addEventListener('click', () => {
             } catch (err) {
                 logToTerminal('Fallo de conexión con el Agente Python.', 'error');
             }
-        }, 60000);
+        }, 15000);
     } else {
         agentToggle.innerText = 'Activar Agente';
         agentToggle.classList.replace('bg-red-600', 'bg-blue-600');
