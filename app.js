@@ -70,9 +70,12 @@ let portfolio = JSON.parse(localStorage.getItem('ai_portfolio')) || {
     entryPrice: 0
 };
 
+let tradeHistoryLog = JSON.parse(localStorage.getItem('ai_trade_history')) || [];
+
 // Función de reseteo para limpiar la memoria si el usuario quiere empezar de cero
 window.resetearCuenta = function() {
     localStorage.removeItem('ai_portfolio');
+    localStorage.removeItem('ai_trade_history');
     location.reload();
 };
 
@@ -343,33 +346,44 @@ document.getElementById('clearLogs').addEventListener('click', () => {
 
 // -- Funciones de Trading y Copiloto --
 
-function addTradeToHistory(signal, baseCoin, price, status, mode) {
+function renderTradeHistory() {
     const tbody = document.getElementById('tradeHistoryBody');
-    const emptyRow = document.getElementById('emptyHistoryRow');
-    if (emptyRow) emptyRow.remove();
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    if (tradeHistoryLog.length === 0) {
+        tbody.innerHTML = `<tr id="emptyHistoryRow"><td colspan="6" class="px-4 py-4 text-center text-gray-600 italic">No hay operaciones registradas aún.</td></tr>`;
+        return;
+    }
+    
+    tradeHistoryLog.forEach(trade => {
+        let statusClass = 'text-gray-400';
+        if (trade.status === 'Ejecutada') statusClass = 'text-green-400 font-bold';
+        if (trade.status === 'Rechazada') statusClass = 'text-red-400 font-bold';
+        let typeClass = trade.signal === 'COMPRAR' ? 'text-green-500' : 'text-red-500';
+        
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-700/50 hover:bg-gray-700/20';
+        tr.innerHTML = `
+            <td class="px-4 py-2">${trade.timeString}</td>
+            <td class="px-4 py-2 font-bold">${trade.baseCoin}/USDT</td>
+            <td class="px-4 py-2 ${typeClass}">${trade.signal}</td>
+            <td class="px-4 py-2 font-mono">$${trade.price.toLocaleString()}</td>
+            <td class="px-4 py-2 ${statusClass}">${trade.status}</td>
+            <td class="px-4 py-2 text-xs">${trade.mode}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
 
+function addTradeToHistory(signal, baseCoin, price, status, mode) {
     const timeString = new Date().toLocaleTimeString();
+    tradeHistoryLog.unshift({ timeString, signal, baseCoin, price, status, mode });
     
-    // Colores según estado
-    let statusClass = 'text-gray-400';
-    if (status === 'Ejecutada') statusClass = 'text-green-400 font-bold';
-    if (status === 'Rechazada') statusClass = 'text-red-400 font-bold';
+    // Guardar en persistencia
+    localStorage.setItem('ai_trade_history', JSON.stringify(tradeHistoryLog));
     
-    let typeClass = signal === 'COMPRAR' ? 'text-green-500' : 'text-red-500';
-
-    const tr = document.createElement('tr');
-    tr.className = 'border-b border-gray-700/50 hover:bg-gray-700/20';
-    tr.innerHTML = `
-        <td class="px-4 py-2">${timeString}</td>
-        <td class="px-4 py-2 font-bold">${baseCoin}/USDT</td>
-        <td class="px-4 py-2 ${typeClass}">${signal}</td>
-        <td class="px-4 py-2 font-mono">$${price.toLocaleString()}</td>
-        <td class="px-4 py-2 ${statusClass}">${status}</td>
-        <td class="px-4 py-2 text-xs">${mode}</td>
-    `;
-    
-    // Insertar al principio
-    tbody.insertBefore(tr, tbody.firstChild);
+    renderTradeHistory();
 }
 
 function executeTrade(signal, baseCoin, price, mode = 'Automático') {
@@ -457,3 +471,8 @@ window.forceClosePosition = function() {
         }
     }
 };
+
+// Al cargar la página, restaurar el historial visual
+document.addEventListener('DOMContentLoaded', () => {
+    renderTradeHistory();
+});
