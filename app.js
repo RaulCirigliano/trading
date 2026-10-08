@@ -70,7 +70,13 @@ let portfolio = JSON.parse(localStorage.getItem('ai_portfolio')) || {
     entryPrice: 0
 };
 
+// Mecanismo de Cordura (Sanity Check) para evitar Save Corruption (NaN o variables faltantes)
+if (typeof portfolio.USDT !== 'number' || isNaN(portfolio.USDT)) portfolio.USDT = 100.00;
+if (typeof portfolio.ASSET !== 'number' || isNaN(portfolio.ASSET)) portfolio.ASSET = 0;
+if (typeof portfolio.entryPrice !== 'number' || isNaN(portfolio.entryPrice)) portfolio.entryPrice = 0;
+
 let tradeHistoryLog = JSON.parse(localStorage.getItem('ai_trade_history')) || [];
+if (!Array.isArray(tradeHistoryLog)) tradeHistoryLog = [];
 
 // Función de reseteo para limpiar la memoria si el usuario quiere empezar de cero
 window.resetearCuenta = function() {
