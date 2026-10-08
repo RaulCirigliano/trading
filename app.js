@@ -67,13 +67,15 @@ let currentPrice = 0;
 let portfolio = JSON.parse(localStorage.getItem('ai_portfolio')) || {
     USDT: 100.00,
     ASSET: 0,
-    entryPrice: 0
+    entryPrice: 0,
+    VAULT: 0
 };
 
 // Mecanismo de Cordura (Sanity Check) para evitar Save Corruption (NaN o variables faltantes)
 if (typeof portfolio.USDT !== 'number' || isNaN(portfolio.USDT)) portfolio.USDT = 100.00;
 if (typeof portfolio.ASSET !== 'number' || isNaN(portfolio.ASSET)) portfolio.ASSET = 0;
 if (typeof portfolio.entryPrice !== 'number' || isNaN(portfolio.entryPrice)) portfolio.entryPrice = 0;
+if (typeof portfolio.VAULT !== 'number' || isNaN(portfolio.VAULT)) portfolio.VAULT = 0;
 
 let tradeHistoryLog = JSON.parse(localStorage.getItem('ai_trade_history')) || [];
 if (!Array.isArray(tradeHistoryLog)) tradeHistoryLog = [];
@@ -86,10 +88,26 @@ window.resetearCuenta = function() {
 };
 
 function updateCapitalDisplay() {
-    const total = portfolio.USDT + (portfolio.ASSET * currentPrice);
+    let total = portfolio.USDT + (portfolio.ASSET * currentPrice);
+    
+    // Milestone Checker (Toma de Ganancias Automática a la Bóveda)
+    if (total >= 200.00 && portfolio.ASSET === 0) { // Solo transferimos si no hay posiciones abiertas
+        portfolio.USDT -= 100.00;
+        portfolio.VAULT += 100.00;
+        total -= 100.00;
+        localStorage.setItem('ai_portfolio', JSON.stringify(portfolio));
+        logToTerminal(`🏦 HITO ALCANZADO: Capital duplicado. $100 transferidos a la Bóveda Segura Intocable.`, 'action');
+    }
+
     document.getElementById('capitalDisplay').innerText = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     
-    // Calcular Rendimiento Total
+    // Actualizar Bóveda en UI
+    const vaultDisplay = document.getElementById('vaultDisplay');
+    if (vaultDisplay) vaultDisplay.innerText = `$${portfolio.VAULT.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    const botCapDisplay = document.getElementById('botCapitalDisplay');
+    if (botCapDisplay) botCapDisplay.innerText = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    
+    // Calcular Rendimiento Total (PnlD) basado solo en el capital activo del bot
     const pnlDisplay = document.getElementById('pnlDisplay');
     if (pnlDisplay) {
         const diff = total - 100.00;
