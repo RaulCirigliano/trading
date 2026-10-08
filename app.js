@@ -75,7 +75,7 @@ let tradeHistoryLog = JSON.parse(localStorage.getItem('ai_trade_history')) || []
 // Función de reseteo para limpiar la memoria si el usuario quiere empezar de cero
 window.resetearCuenta = function() {
     localStorage.removeItem('ai_portfolio');
-    localStorage.removeItem('ai_trade_history');
+    // No borramos 'ai_trade_history' para que el registro histórico sea eterno
     location.reload();
 };
 
