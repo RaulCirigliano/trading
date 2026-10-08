@@ -84,3 +84,7 @@ Mediante reglas matemáticas estrictas (MACD, Bollinger), un Agente de Riesgo in
 - **Botón de Pánico (Cierre Manual):** Control absoluto para vender inmediatamente a mercado ignorando a la IA.
 - **Persistencia de Datos:** El simulador guarda el progreso del portfolio en `localStorage` (evitando pérdida de dinero virtual al refrescar).
 - **Capital Realista:** Ajuste de capital inicial de prueba a $100 USDT para entrenamiento psicológico realista del trader humano.
+
+## Reglas Avanzadas de Capital para Producción (Dinero Real)
+- [ ] **Aislamiento de Fondos (Billetera Dedicada):** Cuando se conecte a un exchange real, utilizar la funcionalidad de "Sub-cuentas" (ej. en Binance/Kraken) o programar un `MAX_ALLOCATED_CAPITAL` en el código. Esto garantiza que si el usuario tiene $10,000 en el exchange, la IA solo pueda "ver" y utilizar los $1,000 asignados, protegiendo el 90% restante de cualquier fallo algorítmico.
+- [ ] **Interés Compuesto y Aseguramiento de Ganancias (Toma de Beneficios):** Programar lógica para que la IA opere usando un porcentaje dinámico (ej. 25% del saldo actual) permitiendo interés compuesto. Además, crear un "Milestone Checker": si la IA logra duplicar el capital inicial (ej. pasa de $100 a $200), se activa una regla automática que bloquea/transfiere el 50% de las ganancias a la billetera "intocable" del usuario, garantizando que el trader humano recupere su inversión inicial y el bot siga operando puramente con las ganancias ("Free rolling").
