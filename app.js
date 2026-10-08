@@ -91,7 +91,8 @@ function updateCapitalDisplay() {
     let total = portfolio.USDT + (portfolio.ASSET * currentPrice);
     
     // Milestone Checker (Toma de Ganancias Automática a la Bóveda)
-    if (total >= 200.00 && portfolio.ASSET === 0) { // Solo transferimos si no hay posiciones abiertas
+    const autoVaultToggle = document.getElementById('autoVaultToggle');
+    if (autoVaultToggle && autoVaultToggle.checked && total >= 200.00 && portfolio.ASSET === 0) { // Solo transferimos si no hay posiciones abiertas
         portfolio.USDT -= 100.00;
         portfolio.VAULT += 100.00;
         total -= 100.00;
@@ -412,9 +413,9 @@ function addTradeToHistory(signal, baseCoin, price, status, mode) {
 
 function executeTrade(signal, baseCoin, price, mode = 'Automático') {
     if (signal === 'COMPRAR') {
-        // Gestión de Capital: 25% por operación (Máx $25 por trade en cuenta de $100)
-        const maxRiesgo = 25.00;
-        const tradeAmount = portfolio.USDT >= maxRiesgo ? maxRiesgo : portfolio.USDT;
+        // Gestión de Capital: 25% del saldo disponible por operación (Interés Compuesto)
+        const maxRiesgo = portfolio.USDT * 0.25;
+        const tradeAmount = maxRiesgo;
         
         if (tradeAmount < 5) {
             logToTerminal('⚠️ Saldo insuficiente para abrir nueva posición.', 'error');
@@ -500,3 +501,11 @@ window.forceClosePosition = function() {
 document.addEventListener('DOMContentLoaded', () => {
     renderTradeHistory();
 });
+
+// Funciones interactivas de la Bóveda
+window.inyectarCapital = function(amount) {
+    portfolio.USDT += amount;
+    localStorage.setItem('ai_portfolio', JSON.stringify(portfolio));
+    logToTerminal(`💸 DEPÓSITO: Se han inyectado $${amount} de liquidez al Agente.`, 'action');
+    updateCapitalDisplay();
+};

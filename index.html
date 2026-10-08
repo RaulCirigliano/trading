@@ -144,8 +144,15 @@
                         <span class="text-gray-400">Ganancias Aseguradas:</span>
                         <span id="vaultDisplay" class="font-mono text-green-400 font-bold">$0.00</span>
                     </div>
-                    <div class="mt-2 pt-2 border-t border-gray-700 text-xs text-gray-500">
-                        *El sistema auto-transferirá $100 a la Bóveda cuando el capital asignado logre alcanzar los $200.
+                    <div class="mt-3 pt-3 border-t border-gray-700 flex flex-col space-y-2">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="autoVaultToggle" checked class="sr-only peer">
+                            <div class="w-7 h-4 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-green-500"></div>
+                            <span class="ml-2 text-xs text-gray-400">Auto-Transferir ganancias al duplicar ($200)</span>
+                        </label>
+                        <button onclick="window.inyectarCapital(50)" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded border border-gray-600 transition w-full text-center">
+                            💸 Inyectar +$50 al Bot (Interés Compuesto)
+                        </button>
                     </div>
                 </div>
             </div>
